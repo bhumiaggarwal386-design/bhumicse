@@ -15,6 +15,7 @@ import com.example.bhumicse.ui.theme.BhumicseTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        //Test:Backend team is ready
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
