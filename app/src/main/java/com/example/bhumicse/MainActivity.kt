@@ -17,6 +17,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         //Test:Backend team is ready
         //Hi
+        //hello!
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
