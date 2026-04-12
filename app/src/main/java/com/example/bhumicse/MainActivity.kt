@@ -19,6 +19,7 @@ class MainActivity : ComponentActivity() {
         //Hi
         //hello!
         //hi ishita!
+        //042
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
