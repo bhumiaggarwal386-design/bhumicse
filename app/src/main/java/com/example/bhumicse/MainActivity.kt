@@ -18,6 +18,7 @@ class MainActivity : ComponentActivity() {
         //Test:Backend team is ready
         //Hi
         //hello!
+        //hi ishita!
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
