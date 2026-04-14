@@ -11,18 +11,27 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModelProvider
 import com.example.bhumicse.ui.theme.BhumicseTheme
+/** * BACKEND HANDOVER NOTES:
+ * 1. To save an item: Call 'viewModel.insert(item)'
+ * 2. To get the list of clothes: Use 'viewModel.allClothes'
+ * 3. Image Handling: Save the photo URI as a String in 'imageUri'.
+ */
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        //Test:Backend team is ready
-        //Hi
-        //hello!
-        //hi ishita!
-        //042
-        //071
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // --- BACKEND INITIALIZATION START ---
+        val database by lazy { WardrobeDatabase.getDatabase(this) }
+        val repository by lazy { ClothingRepository(database.clothingDao()) }
+        val viewModelFactory = ClothingViewModelFactory(repository)
+        val viewModel: ClothingViewModel = ViewModelProvider(this, viewModelFactory).get(ClothingViewModel::class.java)
+        // --- BACKEND INITIALIZATION END ---
+
         setContent {
             BhumicseTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
