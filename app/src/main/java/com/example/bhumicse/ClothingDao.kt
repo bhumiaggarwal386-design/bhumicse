@@ -11,4 +11,6 @@ interface ClothingDao {
 
     @Query("SELECT * FROM wardrobe_table")
     fun getAllClothes(): List<ClothingItem>
+@Query("SELECT * FROM wardrobe_table WHERE category = :category")
+fun getItemsByCategory(category: String): List<ClothingItem>
 }

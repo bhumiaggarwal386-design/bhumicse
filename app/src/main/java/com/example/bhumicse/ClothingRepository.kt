@@ -10,4 +10,7 @@ class ClothingRepository(private val clothingDao: ClothingDao) {
     suspend fun insert(item: ClothingItem) {
         clothingDao.addClothes(item)
     }
+    fun getItemsByCategory(category: String): List<ClothingItem> {
+        return clothingDao.getItemsByCategory(category)
+    }
 }
