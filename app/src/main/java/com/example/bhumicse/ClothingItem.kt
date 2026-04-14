@@ -8,5 +8,7 @@ data class ClothingItem(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
     val category: String, // like "Indian Wear", "Western", etc.
-    val color: String
+    val color: String,
+    val imageUri:String? = null
 )
+
