@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     // Delete the KSP line from here for a moment
+    //ishita
 }
 
 android {
