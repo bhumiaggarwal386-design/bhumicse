@@ -11,14 +11,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -79,28 +89,61 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun WardrobeScreen(viewModel: ClothingViewModel) {
-    // This connects the Database to the UI screen
-    val clothesList by viewModel.allClothes.collectAsState()
+    val clothesList by viewModel.allClothes.collectAsState(initial = emptyList())
+    var showDialog by remember { mutableStateOf(false) }
 
-    LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        item {
-            Text(
-                text = "My Digital Wardrobe",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = { showDialog = true }) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
+            }
         }
-
-        items(clothesList) { item ->
-            Card(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = item.name, style = MaterialTheme.typography.titleLarge)
-                    Text(text = "Category: ${item.category}", color = Color.Gray)
+    ) { padding ->
+        Column(modifier = Modifier.padding(padding).padding(16.dp)) {
+            Text("My Digital Wardrobe", style = MaterialTheme.typography.headlineMedium)
+            LazyColumn {
+                items(clothesList) { item ->
+                    Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(item.name, style = MaterialTheme.typography.titleLarge)
+                            Text("Category: ${item.category}", color = Color.Gray)
+                            Text("Color: ${item.color}", color = Color.Gray)
+                        }
+                    }
                 }
             }
         }
     }
+
+    if (showDialog) {
+        AddItemDialog(
+            onDismiss = { showDialog = false },
+            onAdd = { name, cat, color ->
+                viewModel.insert(ClothingItem(name = name, category = cat, color = color))
+                showDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+fun AddItemDialog(onDismiss: () -> Unit, onAdd: (String, String, String) -> Unit) {
+    var name by remember { mutableStateOf("") }
+    var category by remember { mutableStateOf("") }
+    var color by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Button(onClick = { onAdd(name, category, color) }) { Text("Add") }
+        },
+        title = { Text("Add Clothing") },
+        text = {
+            Column {
+                TextField(value = name, onValueChange = { name = it }, label = { Text("Name") })
+                TextField(value = category, onValueChange = { category = it }, label = { Text("Category") })
+                TextField(value = color, onValueChange = { color = it }, label = { Text("Color") })
+            }
+        }
+    )
 }
