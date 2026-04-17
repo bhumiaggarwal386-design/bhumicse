@@ -1,6 +1,7 @@
 package com.example.bhumicse
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,7 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.bhumicse.ui.theme.BhumicseTheme
+import kotlinx.coroutines.launch
+
 /** * BACKEND HANDOVER NOTES:
  * 1. To save an item: Call 'viewModel.insert(item)'
  * 2. To get the list of clothes: Use 'viewModel.allClothes'
@@ -41,6 +45,18 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+        }
+
+        // Example of how to use the database (removing the broken placeholder code)
+        lifecycleScope.launch {
+            viewModel.insert(
+                ClothingItem(
+                    name = "Shirt",
+                    category = "Casual",
+                    color = "Blue"
+                )
+            )
+            Log.d("DB_TEST", "Item inserted successfully")
         }
     }
 }

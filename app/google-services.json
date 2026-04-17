@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1083833919439",
+    "project_id": "stylesync-5e389",
+    "storage_bucket": "stylesync-5e389.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1083833919439:android:c59f6dea1072c869f694ba",
+        "android_client_info": {
+          "package_name": "com.example.bhumicse"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiJ6cNJLzexkNd64VbzEBWeGeZEvX86uE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
