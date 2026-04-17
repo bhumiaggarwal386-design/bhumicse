@@ -84,6 +84,7 @@ fun WardrobeScreen(viewModel: ClothingViewModel) {
     val clothesList by viewModel.allClothes.collectAsState(initial = emptyList())
     var showDialog by remember { mutableStateOf(false) }
 
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = { showDialog = true }) {
