@@ -1,6 +1,7 @@
 package com.example.bhumicse
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
@@ -15,4 +16,7 @@ interface ClothingDao {
 
     @Query("SELECT * FROM wardrobe_table WHERE category = :category")
     fun getItemsByCategory(category: String): Flow<List<ClothingItem>>
+
+    @Delete
+    suspend fun deleteClothes(item: ClothingItem)
 }

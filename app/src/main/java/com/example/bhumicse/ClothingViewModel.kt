@@ -2,6 +2,7 @@ package com.example.bhumicse
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -17,8 +18,16 @@ class ClothingViewModel(private val repository: ClothingRepository) : ViewModel(
             initialValue = emptyList()
         )
 
+    fun getItemsByCategory(category: String): Flow<List<ClothingItem>> {
+        return repository.getItemsByCategory(category)
+    }
+
     // Logic to add a new clothing item
     fun insert(item: ClothingItem) = viewModelScope.launch {
         repository.insert(item)
+    }
+
+    fun delete(item: ClothingItem) = viewModelScope.launch {
+        repository.delete(item)
     }
 }

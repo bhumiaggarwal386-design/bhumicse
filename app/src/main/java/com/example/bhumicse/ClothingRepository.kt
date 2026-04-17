@@ -14,4 +14,8 @@ class ClothingRepository(private val clothingDao: ClothingDao) {
     fun getItemsByCategory(category: String): Flow<List<ClothingItem>> {
         return clothingDao.getItemsByCategory(category)
     }
+
+    suspend fun delete(item: ClothingItem) {
+        clothingDao.deleteClothes(item)
+    }
 }

@@ -17,13 +17,6 @@ import androidx.lifecycle.lifecycleScope
 import com.example.bhumicse.ui.theme.BhumicseTheme
 import kotlinx.coroutines.launch
 
-/** * BACKEND HANDOVER NOTES:
- * 1. To save an item: Call 'viewModel.insert(item)'
- * 2. To get the list of clothes: Use 'viewModel.allClothes'
- * 3. Image Handling: Save the photo URI as a String in 'imageUri'.
- */
-
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,16 +40,34 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Example of how to use the database (removing the broken placeholder code)
+        // Example of how to use the database correctly
         lifecycleScope.launch {
-            viewModel.insert(
-                ClothingItem(
-                    name = "Shirt",
-                    category = "Casual",
-                    color = "Blue"
-                )
+            // 1. Create a test item
+            val testShirt = ClothingItem(
+                name = "Blue Denim",
+                category = "Shirts",
+                color = "Blue"
             )
-            Log.d("DB_TEST", "Item inserted successfully")
+
+            // 2. TEST: ADDING (Insert)
+            Log.d("WARDROBE_TEST", "Adding a shirt to the wardrobe...")
+            viewModel.insert(testShirt)
+        }
+
+        // 3. TEST: READING (Separate launch blocks for multiple collections)
+        lifecycleScope.launch {
+            viewModel.allClothes.collect { list ->
+                Log.d("WARDROBE_TEST", "Success! Total items in wardrobe: ${list.size}")
+                list.forEach { item ->
+                    Log.d("WARDROBE_TEST", "Item in DB: ${item.name} (${item.category})")
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.getItemsByCategory("Shirts").collect { shirtList ->
+                Log.d("WARDROBE_TEST", "FILTER TEST: Found ${shirtList.size} shirts.")
+            }
         }
     }
 }
