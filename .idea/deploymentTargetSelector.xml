@@ -23,6 +23,7 @@
       </SelectionState>
       <SelectionState runConfigName="PreviewScreen">
         <option name="selectionMode" value="DROPDOWN" />
+        <DialogSelection />
       </SelectionState>
     </selectionStates>
   </component>
