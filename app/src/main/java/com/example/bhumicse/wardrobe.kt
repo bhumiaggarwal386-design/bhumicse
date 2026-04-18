@@ -1,7 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 package com.example.bhumicse
 
-
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.*
@@ -14,8 +13,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,12 +31,13 @@ import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 
-
-data class ClothingItem(
+// Renamed from ClothingItem to WardrobeItem to avoid conflict with the Room entity in ClothingItem.kt
+data class WardrobeItem(
     val id: Int,
     val name: String,
     val imageRes: Int
 )
+
 @Composable
 fun WardScreen() {
 
@@ -106,14 +104,15 @@ fun WardrobeTopBar() {
         )
     )
 }
+
 @Composable
-fun CategorySection(title: String, items: List<ClothingItem>) {
+fun CategorySection(title: String, items: List<WardrobeItem>) {
 
     Column(modifier = Modifier.padding(12.dp)) {
 
         Text(
             text = title,
-            fontWeight =Bold,
+            fontWeight = Bold,
             fontSize = 18.sp
         )
 
@@ -123,21 +122,31 @@ fun CategorySection(title: String, items: List<ClothingItem>) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = Modifier.height(220.dp)
-        ) {
+        // Replaced LazyVerticalGrid with a manual grid using Column and Row.
+        // Nested Lazy layouts (like LazyVerticalGrid inside LazyColumn) frequently cause
+        // NullPointerException in CompositionDataTree during Preview rendering in Android Studio.
+        val allCards = mutableListOf<@Composable () -> Unit>()
+        allCards.add { NewItemCard() }
+        items.forEach { item ->
+            allCards.add { ClothingCard(item) }
+        }
 
-            item {
-                NewItemCard()
-            }
-
-            items(items.size) {
-                ClothingCard(items[it])
+        allCards.chunked(3).forEach { rowItems ->
+            Row(modifier = Modifier.fillMaxWidth()) {
+                rowItems.forEach { card ->
+                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                        card()
+                    }
+                }
+                // Fill remaining space if the row is not complete
+                if (rowItems.size < 3) {
+                    Spacer(modifier = Modifier.weight((3 - rowItems.size).toFloat()))
+                }
             }
         }
     }
 }
+
 @Composable
 fun CategoryChips() {
 
@@ -153,8 +162,9 @@ fun CategoryChips() {
         }
     }
 }
+
 @Composable
-fun ClothingCard(item: ClothingItem) {
+fun ClothingCard(item: WardrobeItem) {
 
     Card(
         modifier = Modifier
@@ -182,6 +192,7 @@ fun ClothingCard(item: ClothingItem) {
         }
     }
 }
+
 @Composable
 fun NewItemCard() {
 
@@ -206,6 +217,7 @@ fun NewItemCard() {
         }
     }
 }
+
 @Composable
 fun BottomNavBar() {
 
@@ -232,13 +244,16 @@ fun BottomNavBar() {
             label = { Text("Profile") }
         )
     }
-}fun sampleItems(): List<ClothingItem> {
+}
+
+fun sampleItems(): List<WardrobeItem> {
     return listOf(
-        ClothingItem(1, "Shirt", R.drawable.shirt),
-        ClothingItem(2, "T-Shirt", R.drawable.tshirt),
-        ClothingItem(3, "Jeans", R.drawable.jeans)
+        WardrobeItem(1, "Shirt", R.drawable.shirt),
+        WardrobeItem(2, "T-Shirt", R.drawable.tshirt),
+        WardrobeItem(3, "Jeans", R.drawable.jeans)
     )
 }
+
 @Preview(showBackground = true)
 @Composable
 fun WardrobePreview() {

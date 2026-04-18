@@ -99,7 +99,7 @@ fun SecondScreen() {
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.wardrobe),
+                                        painter = painterResource(id = R.drawable.wardrobe2),
                                         contentDescription = "Wardrobe",
                                         tint = if (selectedItem == 0) Color.White else Color.Gray
                                     )
