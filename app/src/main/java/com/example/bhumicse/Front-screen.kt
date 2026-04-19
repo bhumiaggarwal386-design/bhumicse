@@ -21,14 +21,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.layout.ContentScale
 
-class `Front-screen` : ComponentActivity() {
+class FrontActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         //Test:Backend team is ready
 
         super.onCreate(savedInstanceState)
         //  enableEdgeToEdge()
         setContent {
-            `Front-screen`()
+            Frontscreen()
         }
     }
 }
@@ -136,5 +136,5 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewScreen() {
-    `Front-screen`()
+    Frontscreen()
 }

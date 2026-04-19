@@ -9,6 +9,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -28,8 +32,12 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Checkroom
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.viewModelFactory
+
 
 // Renamed from ClothingItem to WardrobeItem to avoid conflict with the Room entity in ClothingItem.kt
 data class WardrobeItem(
@@ -40,11 +48,27 @@ data class WardrobeItem(
 
 @Composable
 fun WardScreen() {
-
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFFFFF0F5),
+                        Color.White
+                    )
+                )
+            )
+    )
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+     val topWearChips = listOf("All", "Shirt", "Jacket","Hoodie","Denim")
+    val bottomWearChips = listOf("All","Jeans","Trouser","Skirt","Shorts")
+    val accessoriesChips = listOf("All","Bangles","Earrings","Necklace","Bracelet")
+
 
     Scaffold(
+        containerColor = Color.Transparent,
         topBar = { WardrobeTopBar() },
         bottomBar = { BottomNavBar() },
         floatingActionButton = {
@@ -72,26 +96,30 @@ fun WardScreen() {
             item {
                 CategorySection(
                     title = "Top Wear",
-                    items = sampleItems()
+                    items = sampleItems(),
+                    chips = topWearChips
                 )
             }
 
             item {
                 CategorySection(
                     title = "Bottom Wear",
-                    items = sampleItems()
+                    items = sampleItems(),
+                    chips = bottomWearChips
                 )
             }
 
             item {
                 CategorySection(
                     title = "Accessories",
-                    items = sampleItems()
+                    items = sampleItems(),
+                    chips = accessoriesChips
                 )
             }
         }
     }
 }
+
 
 @Composable
 fun WardrobeTopBar() {
@@ -106,7 +134,9 @@ fun WardrobeTopBar() {
 }
 
 @Composable
-fun CategorySection(title: String, items: List<WardrobeItem>) {
+fun CategorySection(title: String,
+                    items: List<WardrobeItem>,
+                    chips: List<String>) {
 
     Column(modifier = Modifier.padding(12.dp)) {
 
@@ -118,7 +148,7 @@ fun CategorySection(title: String, items: List<WardrobeItem>) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        CategoryChips()
+        CategoryChips(chips = chips)
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -146,11 +176,19 @@ fun CategorySection(title: String, items: List<WardrobeItem>) {
         }
     }
 }
-
+//@Composable
+//fun WardScreenRoute() {
+//    val model: ClothingViewModel = viewModel(
+//        factory = ClothingViewModelFactory(
+//            repository = ClothingRepository(
+//                clothingDao = /* real DAO here */
+//            )
+//        )
+//    )
+//    WardScreen(model)
+//}
 @Composable
-fun CategoryChips() {
-
-    val chips = listOf("All", "Shirt", "Jacket", "Hoodie", "Denim")
+fun CategoryChips(chips: List<String>) {
 
     LazyRow {
         items(chips) { chip ->
@@ -165,6 +203,23 @@ fun CategoryChips() {
 
 @Composable
 fun ClothingCard(item: WardrobeItem) {
+    val context = LocalContext.current
+    
+    // Manually load the bitmap to handle potential nulls safely, 
+    // especially in the Android Studio Preview where decoding might fail.
+    // This avoids the NullPointerException in BitmapPainter when the internal bitmap is null.
+    val customPainter = remember(item.imageRes) {
+        try {
+            val bitmap = BitmapFactory.decodeResource(context.resources, item.imageRes)
+            if (bitmap != null) {
+                BitmapPainter(bitmap.asImageBitmap())
+            } else {
+                null
+            }
+        } catch (e: Throwable) {
+            null
+        }
+    }
 
     Card(
         modifier = Modifier
@@ -174,9 +229,9 @@ fun ClothingCard(item: WardrobeItem) {
     ) {
 
         Box(contentAlignment = Alignment.BottomEnd) {
-
+            
             Image(
-                painter = painterResource(id = item.imageRes),
+                painter = customPainter ?: painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = item.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -227,7 +282,7 @@ fun BottomNavBar() {
             selected = true,
             onClick = { },
             icon = { Icon(Icons.Default.Home, contentDescription = "") },
-            label = { Text("Home") }
+            label = { Text("Create") }
         )
 
         NavigationBarItem(
@@ -241,7 +296,7 @@ fun BottomNavBar() {
             selected = false,
             onClick = { },
             icon = { Icon(Icons.Default.Person, contentDescription = "") },
-            label = { Text("Profile") }
+            label = { Text("Planner") }
         )
     }
 }
