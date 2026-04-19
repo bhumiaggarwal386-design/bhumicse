@@ -96,7 +96,7 @@ fun WardScreen() {
             item {
                 CategorySection(
                     title = "Top Wear",
-                    items = sampleItems(),
+                    items = topWearItems(),
                     chips = topWearChips
                 )
             }
@@ -104,7 +104,7 @@ fun WardScreen() {
             item {
                 CategorySection(
                     title = "Bottom Wear",
-                    items = sampleItems(),
+                    items = bottomWearItems(),
                     chips = bottomWearChips
                 )
             }
@@ -112,7 +112,7 @@ fun WardScreen() {
             item {
                 CategorySection(
                     title = "Accessories",
-                    items = sampleItems(),
+                    items = topWearItems(),
                     chips = accessoriesChips
                 )
             }
@@ -301,11 +301,15 @@ fun BottomNavBar() {
     }
 }
 
-fun sampleItems(): List<WardrobeItem> {
+fun topWearItems(): List<WardrobeItem> {
     return listOf(
         WardrobeItem(1, "Shirt", R.drawable.shirt),
-        WardrobeItem(2, "T-Shirt", R.drawable.tshirt),
-        WardrobeItem(3, "Jeans", R.drawable.jeans)
+        WardrobeItem(2, "T-Shirt", R.drawable.tshirt)
+    )
+}
+fun bottomWearItems(): List<WardrobeItem> {
+    return listOf(
+        WardrobeItem(1, "Shirt", R.drawable.jeans)
     )
 }
 
