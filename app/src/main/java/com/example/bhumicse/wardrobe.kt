@@ -112,7 +112,7 @@ fun WardScreen() {
             item {
                 CategorySection(
                     title = "Accessories",
-                    items = topWearItems(),
+                    items = AcessoriesItems(),
                     chips = accessoriesChips
                 )
             }
@@ -309,7 +309,12 @@ fun topWearItems(): List<WardrobeItem> {
 }
 fun bottomWearItems(): List<WardrobeItem> {
     return listOf(
-        WardrobeItem(1, "Shirt", R.drawable.jeans)
+        WardrobeItem(1, "Jeans", R.drawable.jeans)
+    )
+}
+fun AcessoriesItems(): List<WardrobeItem> {
+    return listOf(
+        WardrobeItem(1, "Earrings", R.drawable.earrings)
     )
 }
 

@@ -102,8 +102,8 @@ fun Frontscreen(){
         // Tagline
         Text(
             text = "Style your outfits effortlessly",
-            fontSize = 16.sp,
-            color = Color.Gray
+            fontSize = 20.sp,
+            color = Color.Black
         )
 
         Spacer(modifier = Modifier.height(100.dp))
@@ -114,7 +114,7 @@ fun Frontscreen(){
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFD81B60)
             ),
-            shape = RoundedCornerShape(70.dp)
+            shape = RoundedCornerShape(200.dp)
         ) {
             Text("Get Started",
                 color = Color.White)
