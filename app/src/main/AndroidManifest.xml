@@ -22,6 +22,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Bhawna -->
+        <activity android:name=".EditorActivity" />
+        <activity android:name=".CategoryItemsActivity" />
     </application>
 
 </manifest>
