@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -47,7 +48,7 @@ data class WardrobeItem(
 )
 
 @Composable
-fun WardScreen() {
+fun wardrobe() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -68,7 +69,7 @@ fun WardScreen() {
 
 
     Scaffold(
-        containerColor = Color.Transparent,
+        containerColor = Color.White,
         topBar = { WardrobeTopBar() },
         bottomBar = { BottomNavBar() },
         floatingActionButton = {
@@ -90,7 +91,7 @@ fun WardScreen() {
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(Color.White)
         ) {
 
             item {
@@ -125,10 +126,10 @@ fun WardScreen() {
 fun WardrobeTopBar() {
     TopAppBar(
         title = {
-            Text("My Wardrobe", color = Color.White)
+            Text("My Wardrobe", color = Color.Black)
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Black
+            containerColor = Color(0xFFFFE4E1)
         )
     )
 }
@@ -276,7 +277,7 @@ fun NewItemCard() {
 @Composable
 fun BottomNavBar() {
 
-    NavigationBar {
+    NavigationBar( containerColor = Color(0xFFFFE4E1)) {
 
         NavigationBarItem(
             selected = true,
@@ -295,7 +296,7 @@ fun BottomNavBar() {
         NavigationBarItem(
             selected = false,
             onClick = { },
-            icon = { Icon(Icons.Default.Person, contentDescription = "") },
+            { Icon(Icons.Default.CalendarMonth, contentDescription = "Planner") },
             label = { Text("Planner") }
         )
     }
@@ -321,5 +322,5 @@ fun AcessoriesItems(): List<WardrobeItem> {
 @Preview(showBackground = true)
 @Composable
 fun WardrobePreview() {
-    WardScreen()
+    wardrobe()
 }
