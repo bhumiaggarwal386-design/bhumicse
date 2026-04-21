@@ -38,6 +38,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.bhumicse.ui.theme.BhumicseTheme
 import kotlinx.coroutines.launch
 
@@ -56,6 +59,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             BhumicseTheme {
                 WardrobeScreen(viewModel = viewModel)
+                AppNavigation()
             }
         }
 
@@ -157,4 +161,27 @@ fun AddItemDialog(onDismiss: () -> Unit, onAdd: (String, String, String) -> Unit
             }
         }
     )
+}
+@Composable
+fun AppNavigation() {
+
+    val navController = rememberNavController()
+
+    NavHost(
+        navController = navController,
+        startDestination = "front"
+    ) {
+
+        composable("front") {
+            Frontscreen(navController)
+        }
+
+        composable("second") {
+            SecondScreen()
+        }
+
+        composable("wardrobe") {
+            wardrobe()
+        }
+    }
 }

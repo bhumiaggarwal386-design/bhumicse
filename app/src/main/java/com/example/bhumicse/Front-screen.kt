@@ -20,6 +20,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontStyle
+import androidx.navigation.NavController
+
 
 class FrontActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,7 +105,9 @@ fun Frontscreen(){
         // Tagline
         Text(
             text = "Style your outfits effortlessly",
-            fontSize = 20.sp,
+//            fontstyle = FontStyle.Italic,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 22.sp,
             color = Color.Black
         )
 
@@ -110,14 +115,18 @@ fun Frontscreen(){
 
         // Button
         Button(
+            modifier = Modifier
+                .width(200.dp)
+                .height(60.dp), 
             onClick = { },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFD81B60)
             ),
-            shape = RoundedCornerShape(200.dp)
+            shape = RoundedCornerShape(40.dp)
         ) {
             Text("Get Started",
-                color = Color.White)
+                color = Color.White,
+                        fontSize = 20.sp   )
 
         }
     }
@@ -137,4 +146,24 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun PreviewScreen() {
     Frontscreen()
+}
+@Composable
+fun Frontscreen(navController: NavController) {
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Text("Welcome")
+
+        Button(
+            onClick = {
+                navController.navigate("second")   // 👈 go to second screen
+            }
+        ) {
+            Text("Get Started")
+        }
+    }
 }

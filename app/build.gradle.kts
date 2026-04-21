@@ -53,10 +53,12 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("androidx.cardview:cardview:1.0.0")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
     
     // Room Database
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.compose.foundation.layout)
     ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)

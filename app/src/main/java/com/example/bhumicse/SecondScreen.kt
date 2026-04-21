@@ -1,6 +1,7 @@
 package com.example.bhumicse
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -32,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 @Composable
 fun SecondScreen() {
@@ -53,7 +56,7 @@ fun SecondScreen() {
         Scaffold(
             containerColor = Color.Transparent, // Make Scaffold transparent to show the gradient background
             bottomBar = {
-                NavigationBar(containerColor = Color(0xFFFFB6C1)) {
+                NavigationBar(containerColor = Color(0xFFFFE4E1)) {
                     NavigationBarItem(
                         selected = selectedItem == 0,
                         onClick = { selectedItem = 0 },
@@ -170,4 +173,24 @@ fun PlannerScreen() {
 @Composable
 fun SecondScreenPreview() {
     SecondScreen()
+}
+@Composable
+fun Secondscreen(navController: NavController) {
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Text("Second Screen")
+
+        Button(
+            onClick = {
+                navController.navigate("wardrobe")   // 👈 go to main screen
+            }
+        ) {
+            Text("Continue")
+        }
+    }
 }
