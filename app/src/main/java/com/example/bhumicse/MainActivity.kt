@@ -58,8 +58,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BhumicseTheme {
-                WardrobeScreen(viewModel = viewModel)
-                AppNavigation()
+//                WardrobeScreen(viewModel = viewModel)
+                AppNavigation(viewModel)
             }
         }
 
@@ -163,7 +163,7 @@ fun AddItemDialog(onDismiss: () -> Unit, onAdd: (String, String, String) -> Unit
     )
 }
 @Composable
-fun AppNavigation() {
+fun AppNavigation(viewModel: ClothingViewModel) {
 
     val navController = rememberNavController()
 
@@ -181,7 +181,7 @@ fun AppNavigation() {
         }
 
         composable("wardrobe") {
-            wardrobe()
+            WardrobeScreen(viewModel)
         }
     }
 }

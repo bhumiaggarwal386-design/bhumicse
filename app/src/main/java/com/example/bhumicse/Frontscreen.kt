@@ -20,8 +20,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontStyle
 import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 
 
 class FrontActivity : ComponentActivity() {
@@ -31,12 +33,24 @@ class FrontActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         //  enableEdgeToEdge()
         setContent {
-            Frontscreen()
+            val navController = rememberNavController()
+            NavHost(
+                navController = navController,
+                startDestination = "front"
+            ) {
+                composable("front") {
+                    Frontscreen(navController)
+                }
+
+                composable("second") {
+                    SecondScreen()
+                }
+            }
         }
     }
 }
 @Composable
-fun Frontscreen(){
+fun Frontscreen(navController: NavController){
     Box(
         modifier = Modifier.fillMaxSize().background(Color(0x55000000))
     ) {
@@ -118,7 +132,7 @@ fun Frontscreen(){
             modifier = Modifier
                 .width(200.dp)
                 .height(60.dp), 
-            onClick = { },
+            onClick = { navController.navigate("second") },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFD81B60)
             ),
@@ -145,25 +159,25 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewScreen() {
-    Frontscreen()
+    val navController = rememberNavController()
+    Frontscreen(navController)
 }
-@Composable
-fun Frontscreen(navController: NavController) {
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Text("Welcome")
-
-        Button(
-            onClick = {
-                navController.navigate("second")   // 👈 go to second screen
-            }
-        ) {
-            Text("Get Started")
-        }
-    }
-}
+//fun Frontscreen(navController: NavController) {
+//
+//    Column(
+//        modifier = Modifier.fillMaxSize(),
+//        verticalArrangement = Arrangement.Center,
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//
+//        Text("Welcome")
+//
+//        Button(
+//            onClick = {
+//                navController.navigate("second")   // 👈 go to second screen
+//            }
+//        ) {
+//            Text("Get Started")
+//        }
+//    }
+//}
