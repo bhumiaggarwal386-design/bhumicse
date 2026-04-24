@@ -31,13 +31,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.viewModelFactory
 
 
 // Renamed from ClothingItem to WardrobeItem to avoid conflict with the Room entity in ClothingItem.kt
@@ -317,6 +314,10 @@ fun AcessoriesItems(): List<WardrobeItem> {
     return listOf(
         WardrobeItem(1, "Earrings", R.drawable.earrings)
     )
+}
+@Composable
+fun WardrobeScreen() {
+    Text("Wardrobe Screen")
 }
 
 @Preview(showBackground = true)
