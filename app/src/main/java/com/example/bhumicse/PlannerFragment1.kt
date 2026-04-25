@@ -21,7 +21,7 @@ data class OutfitPlan(
 )
 
 @Composable
-fun PlannerScreen() {
+fun PlannerScreen1() {
 
     val context = LocalContext.current
 

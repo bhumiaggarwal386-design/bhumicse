@@ -35,6 +35,19 @@ import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Environment
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import java.io.File
+import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 
 // Renamed from ClothingItem to WardrobeItem to avoid conflict with the Room entity in ClothingItem.kt
@@ -63,6 +76,57 @@ fun wardrobe() {
      val topWearChips = listOf("All", "Shirt", "Jacket","Hoodie","Denim")
     val bottomWearChips = listOf("All","Jeans","Trouser","Skirt","Shorts")
     val accessoriesChips = listOf("All","Bangles","Earrings","Necklace","Bracelet")
+    val context = LocalContext.current
+    var tempImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    fun createNewImageUri(): Uri? {
+        val directory = File(
+            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+            "wardrobe"
+        )
+
+        if (!directory.exists()) directory.mkdirs()
+
+        val file = File(
+            directory,
+            "item_${System.currentTimeMillis()}.jpg"
+        )
+
+        return FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            file
+        )
+    }
+    val cameraLauncher =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.TakePicture()
+        ) { success ->
+
+            if(success){
+                Toast.makeText(
+                    context,
+                    "Photo Captured!",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                // save image into wardrobe DB later here
+            }
+        }
+    val permissionLauncher =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { granted ->
+
+            if(granted){
+                val uri = createNewImageUri()
+                tempImageUri = uri
+                uri?.let {
+                    cameraLauncher.launch(it)
+                }
+            }
+
+        }
 
 
     Scaffold(
@@ -72,9 +136,25 @@ fun wardrobe() {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    scope.launch {
-                        snackbarHostState.showSnackbar("Added successfully into your wardrobe")
+
+                    if (
+                        ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.CAMERA
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ){
+                        val uri = createNewImageUri()
+                        tempImageUri = uri
+                        uri?.let{
+                            cameraLauncher.launch(it)
+                        }
+
+                    }else{
+                        permissionLauncher.launch(
+                            Manifest.permission.CAMERA
+                        )
                     }
+
                 },
                 containerColor = Color.Black
             ) {
@@ -296,6 +376,17 @@ fun BottomNavBar() {
             { Icon(Icons.Default.CalendarMonth, contentDescription = "Planner") },
             label = { Text("Planner") }
         )
+//        NavigationBarItem(
+//            selected = false,
+//            onClick = { },
+//            icon = {
+//                Icon(
+//                    Icons.Default.CalendarMonth,
+//                    contentDescription = "Planner"
+//                )
+//            },
+//            label = { Text("Planner") }
+//        )
     }
 }
 
@@ -316,7 +407,7 @@ fun AcessoriesItems(): List<WardrobeItem> {
     )
 }
 @Composable
-fun WardrobeScreen() {
+fun WardrobeScreen2() {
     Text("Wardrobe Screen")
 }
 

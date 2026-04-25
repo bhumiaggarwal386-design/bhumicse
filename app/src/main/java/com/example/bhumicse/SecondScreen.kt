@@ -127,7 +127,7 @@ fun SecondScreen() {
                 when (selectedItem) {
                     0 -> CreateScreen()
                     1 -> WardrobeScreen()
-                    2 -> PlannerScreen()
+                    2 -> PlannerScreen1()
                 }
             }
         }
@@ -165,7 +165,7 @@ fun WardrobeScreen() {
 }
 
 @Composable
-fun PlannerScreen() {
+fun PlannerScreen2() {
     Text("Your Planner")
 }
 
