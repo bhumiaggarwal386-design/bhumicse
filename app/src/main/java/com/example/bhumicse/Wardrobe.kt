@@ -5,7 +5,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
@@ -24,15 +23,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Checkroom
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import android.Manifest
@@ -50,7 +44,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
 
-// Renamed from ClothingItem to WardrobeItem to avoid conflict with the Room entity in ClothingItem.kt
 data class WardrobeItem(
     val id: Int,
     val name: String,
@@ -58,24 +51,7 @@ data class WardrobeItem(
 )
 
 @Composable
-fun wardrobe() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFFFF0F5),
-                        Color.White
-                    )
-                )
-            )
-    )
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-     val topWearChips = listOf("All", "Shirt", "Jacket","Hoodie","Denim")
-    val bottomWearChips = listOf("All","Jeans","Trouser","Skirt","Shorts")
-    val accessoriesChips = listOf("All","Bangles","Earrings","Necklace","Bracelet")
+fun WardrobeScreen4() {
     val context = LocalContext.current
     var tempImageUri by remember { mutableStateOf<Uri?>(null) }
 
@@ -84,145 +60,115 @@ fun wardrobe() {
             context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
             "wardrobe"
         )
-
         if (!directory.exists()) directory.mkdirs()
-
-        val file = File(
-            directory,
-            "item_${System.currentTimeMillis()}.jpg"
-        )
-
+        val file = File(directory, "item_${System.currentTimeMillis()}.jpg")
         return FileProvider.getUriForFile(
             context,
             "${context.packageName}.fileprovider",
             file
         )
     }
-    val cameraLauncher =
-        rememberLauncherForActivityResult(
-            ActivityResultContracts.TakePicture()
-        ) { success ->
 
-            if(success){
-                Toast.makeText(
-                    context,
-                    "Photo Captured!",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                // save image into wardrobe DB later here
-            }
+    val cameraLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            Toast.makeText(context, "Photo Captured!", Toast.LENGTH_SHORT).show()
         }
-    val permissionLauncher =
-        rememberLauncherForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { granted ->
+    }
 
-            if(granted){
-                val uri = createNewImageUri()
-                tempImageUri = uri
-                uri?.let {
-                    cameraLauncher.launch(it)
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            val uri = createNewImageUri()
+            tempImageUri = uri
+            uri?.let { cameraLauncher.launch(it) }
+        }
+    }
+
+    fun launchCamera() {
+        if (ContextCompat.checkSelfPermission(
+                context, Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            val uri = createNewImageUri()
+            tempImageUri = uri
+            uri?.let { cameraLauncher.launch(it) }
+        } else {
+            permissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
+
+    val topWearChips = listOf("All", "Shirt", "Jacket", "Hoodie", "Denim")
+    val bottomWearChips = listOf("All", "Jeans", "Trouser", "Skirt", "Shorts")
+    val accessoriesChips = listOf("All", "Bangles", "Earrings", "Necklace", "Bracelet")
+
+    // ✅ No Scaffold or BottomNavBar here — just the content + FAB in a Box
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        Column(modifier = Modifier.fillMaxSize()) {
+
+            // Top bar just for the wardrobe title
+            TopAppBar(
+                title = { Text("My Wardrobe", color = Color.Black) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFFFFE4E1)
+                )
+            )
+
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                item {
+                    CategorySection(
+                        title = "Top Wear",
+                        items = topWearItems(),
+                        chips = topWearChips,
+                        onNewItemClick = { launchCamera() }
+                    )
+                }
+                item {
+                    CategorySection(
+                        title = "Bottom Wear",
+                        items = bottomWearItems(),
+                        chips = bottomWearChips,
+                        onNewItemClick = { launchCamera() }
+                    )
+                }
+                item {
+                    CategorySection(
+                        title = "Accessories",
+                        items = AcessoriesItems(),
+                        chips = accessoriesChips,
+                        onNewItemClick = { launchCamera() }
+                    )
                 }
             }
-
         }
 
-
-    Scaffold(
-        containerColor = Color.White,
-        topBar = { WardrobeTopBar() },
-        bottomBar = { BottomNavBar() },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-
-                    if (
-                        ContextCompat.checkSelfPermission(
-                            context,
-                            Manifest.permission.CAMERA
-                        ) == PackageManager.PERMISSION_GRANTED
-                    ){
-                        val uri = createNewImageUri()
-                        tempImageUri = uri
-                        uri?.let{
-                            cameraLauncher.launch(it)
-                        }
-
-                    }else{
-                        permissionLauncher.launch(
-                            Manifest.permission.CAMERA
-                        )
-                    }
-
-                },
-                containerColor = Color.Black
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
-            }
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { padding ->
-
-        LazyColumn(
+        // ✅ FAB stays in the wardrobe screen, floated over content
+        FloatingActionButton(
+            onClick = { launchCamera() },
+            containerColor = Color.Black,
             modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .background(Color.White)
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
         ) {
-
-            item {
-                CategorySection(
-                    title = "Top Wear",
-                    items = topWearItems(),
-                    chips = topWearChips
-                )
-            }
-
-            item {
-                CategorySection(
-                    title = "Bottom Wear",
-                    items = bottomWearItems(),
-                    chips = bottomWearChips
-                )
-            }
-
-            item {
-                CategorySection(
-                    title = "Accessories",
-                    items = AcessoriesItems(),
-                    chips = accessoriesChips
-                )
-            }
+            Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
         }
     }
 }
 
 
 @Composable
-fun WardrobeTopBar() {
-    TopAppBar(
-        title = {
-            Text("My Wardrobe", color = Color.Black)
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFFFFE4E1)
-        )
-    )
-}
-
-@Composable
-fun CategorySection(title: String,
-                    items: List<WardrobeItem>,
-                    chips: List<String>) {
-
+fun CategorySection(
+    title: String,
+    items: List<WardrobeItem>,
+    chips: List<String>,
+    onNewItemClick: () -> Unit = {}
+) {
     Column(modifier = Modifier.padding(12.dp)) {
 
-        Text(
-            text = title,
-            fontWeight = Bold,
-            fontSize = 18.sp
-        )
+        Text(text = title, fontWeight = Bold, fontSize = 18.sp)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -230,11 +176,8 @@ fun CategorySection(title: String,
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Replaced LazyVerticalGrid with a manual grid using Column and Row.
-        // Nested Lazy layouts (like LazyVerticalGrid inside LazyColumn) frequently cause
-        // NullPointerException in CompositionDataTree during Preview rendering in Android Studio.
         val allCards = mutableListOf<@Composable () -> Unit>()
-        allCards.add { NewItemCard() }
+        allCards.add { NewItemCard(onClick = onNewItemClick) }
         items.forEach { item ->
             allCards.add { ClothingCard(item) }
         }
@@ -246,7 +189,6 @@ fun CategorySection(title: String,
                         card()
                     }
                 }
-                // Fill remaining space if the row is not complete
                 if (rowItems.size < 3) {
                     Spacer(modifier = Modifier.weight((3 - rowItems.size).toFloat()))
                 }
@@ -254,20 +196,9 @@ fun CategorySection(title: String,
         }
     }
 }
-//@Composable
-//fun WardScreenRoute() {
-//    val model: ClothingViewModel = viewModel(
-//        factory = ClothingViewModelFactory(
-//            repository = ClothingRepository(
-//                clothingDao = /* real DAO here */
-//            )
-//        )
-//    )
-//    WardScreen(model)
-//}
+
 @Composable
 fun CategoryChips(chips: List<String>) {
-
     LazyRow {
         items(chips) { chip ->
             AssistChip(
@@ -282,18 +213,11 @@ fun CategoryChips(chips: List<String>) {
 @Composable
 fun ClothingCard(item: WardrobeItem) {
     val context = LocalContext.current
-    
-    // Manually load the bitmap to handle potential nulls safely, 
-    // especially in the Android Studio Preview where decoding might fail.
-    // This avoids the NullPointerException in BitmapPainter when the internal bitmap is null.
+
     val customPainter = remember(item.imageRes) {
         try {
             val bitmap = BitmapFactory.decodeResource(context.resources, item.imageRes)
-            if (bitmap != null) {
-                BitmapPainter(bitmap.asImageBitmap())
-            } else {
-                null
-            }
+            if (bitmap != null) BitmapPainter(bitmap.asImageBitmap()) else null
         } catch (e: Throwable) {
             null
         }
@@ -305,16 +229,13 @@ fun ClothingCard(item: WardrobeItem) {
             .size(100.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
-
         Box(contentAlignment = Alignment.BottomEnd) {
-            
             Image(
                 painter = customPainter ?: painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = item.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
-
             IconButton(onClick = { }) {
                 Icon(
                     imageVector = Icons.Default.Delete,
@@ -327,18 +248,15 @@ fun ClothingCard(item: WardrobeItem) {
 }
 
 @Composable
-fun NewItemCard() {
-
+fun NewItemCard(onClick: () -> Unit = {}) {
     Card(
         modifier = Modifier
             .padding(6.dp)
             .size(100.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.LightGray
-        )
+        colors = CardDefaults.cardColors(containerColor = Color.LightGray),
+        onClick = onClick
     ) {
-
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
@@ -351,68 +269,27 @@ fun NewItemCard() {
     }
 }
 
-@Composable
-fun BottomNavBar() {
-
-    NavigationBar( containerColor = Color(0xFFFFE4E1)) {
-
-        NavigationBarItem(
-            selected = true,
-            onClick = { },
-            icon = { Icon(Icons.Default.Home, contentDescription = "") },
-            label = { Text("Create") }
-        )
-
-        NavigationBarItem(
-            selected = false,
-            onClick = { },
-            icon = { Icon(Icons.Default.Checkroom, contentDescription = "") },
-            label = { Text("Wardrobe") }
-        )
-
-        NavigationBarItem(
-            selected = false,
-            onClick = { },
-            { Icon(Icons.Default.CalendarMonth, contentDescription = "Planner") },
-            label = { Text("Planner") }
-        )
-//        NavigationBarItem(
-//            selected = false,
-//            onClick = { },
-//            icon = {
-//                Icon(
-//                    Icons.Default.CalendarMonth,
-//                    contentDescription = "Planner"
-//                )
-//            },
-//            label = { Text("Planner") }
-//        )
-    }
-}
-
 fun topWearItems(): List<WardrobeItem> {
     return listOf(
         WardrobeItem(1, "Shirt", R.drawable.shirt),
         WardrobeItem(2, "T-Shirt", R.drawable.tshirt)
     )
 }
+
 fun bottomWearItems(): List<WardrobeItem> {
     return listOf(
         WardrobeItem(1, "Jeans", R.drawable.jeans)
     )
 }
+
 fun AcessoriesItems(): List<WardrobeItem> {
     return listOf(
         WardrobeItem(1, "Earrings", R.drawable.earrings)
     )
 }
-@Composable
-fun WardrobeScreen2() {
-    Text("Wardrobe Screen")
-}
 
 @Preview(showBackground = true)
 @Composable
 fun WardrobePreview() {
-    wardrobe()
+    WardrobeScreen()
 }
