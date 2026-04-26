@@ -17,10 +17,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.File
 
 @Composable
 fun CanvasScreen(
@@ -28,9 +32,11 @@ fun CanvasScreen(
     onSave: () -> Unit
 ) {
 
-    var selectedCategory by remember { mutableStateOf(Category.TOPWEAR) }
+    val context = LocalContext.current
 
+    var selectedCategory by remember { mutableStateOf(Category.TOPWEAR) }
     var showNameDialog by remember { mutableStateOf(false) }
+
     var outfitName by remember {
         mutableStateOf(outfit?.name ?: "")
     }
@@ -54,12 +60,7 @@ fun CanvasScreen(
     }
 
     Scaffold(
-
-        // ✅ HEADER ADDED HERE
-        topBar = {
-            AppHeader()
-        }
-
+        topBar = { AppHeader() }
     ) { padding ->
 
         Column(
@@ -87,12 +88,7 @@ fun CanvasScreen(
 
                         Box(
                             modifier = Modifier
-                                .offset {
-                                    IntOffset(
-                                        offsetX.toInt(),
-                                        offsetY.toInt()
-                                    )
-                                }
+                                .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
                                 .pointerInput(canvasItem.item.id) {
 
                                     detectTransformGestures { _, pan, zoom, rotate ->
@@ -162,9 +158,7 @@ fun CanvasScreen(
                 it.category == selectedCategory
             }
 
-            LazyRow(
-                modifier = Modifier.padding(8.dp)
-            ) {
+            LazyRow(modifier = Modifier.padding(8.dp)) {
                 items(filteredItems) { item ->
 
                     Card(
@@ -211,21 +205,18 @@ fun CanvasScreen(
         }
     }
 
+    // ── SAVE DIALOG ─────────────────────────────────────────────
     if (showNameDialog) {
 
         AlertDialog(
             onDismissRequest = { showNameDialog = false },
-
             title = { Text("Name your outfit") },
-
             text = {
                 OutlinedTextField(
                     value = outfitName,
-                    onValueChange = { outfitName = it },
-                    placeholder = { Text("e.g. Party Look") }
+                    onValueChange = { outfitName = it }
                 )
             },
-
             confirmButton = {
                 TextButton(onClick = {
 
@@ -245,18 +236,22 @@ fun CanvasScreen(
                     }.toMutableList()
 
                     if (outfit == null) {
+
                         SampleData.outfits.add(
                             Outfit(
-                                id = SampleData.outfits.size + 1,
+                                id = (System.currentTimeMillis() % Int.MAX_VALUE).toInt(),
                                 name = finalName,
                                 items = snapshot
                             )
                         )
+
                     } else {
                         outfit.name = finalName
                         outfit.items.clear()
                         outfit.items.addAll(snapshot)
                     }
+
+                    saveOutfits(context, SampleData.outfits) // ✅ SAVE FIX
 
                     showNameDialog = false
                     onSave()
@@ -265,7 +260,6 @@ fun CanvasScreen(
                     Text("Save")
                 }
             },
-
             dismissButton = {
                 TextButton(onClick = { showNameDialog = false }) {
                     Text("Cancel")
@@ -273,4 +267,44 @@ fun CanvasScreen(
             }
         )
     }
+}
+
+/* ─────────────────────────────────────────────
+   ✅ ADDED PERSISTENCE FUNCTION (FIX)
+───────────────────────────────────────────── */
+
+private const val OUTFIT_FILE = "outfits.json"
+
+private fun saveOutfits(context: android.content.Context, outfits: List<Outfit>) {
+
+    val jsonArray = JSONArray()
+
+    outfits.forEach { outfit ->
+        val obj = JSONObject().apply {
+            put("id", outfit.id)
+            put("name", outfit.name)
+            put("rating", outfit.rating)
+
+            val itemsArray = JSONArray()
+            outfit.items.forEach { item ->
+                val itemObj = JSONObject().apply {
+                    put("itemId", item.itemId)
+                    put("offsetX", item.offsetX)
+                    put("offsetY", item.offsetY)
+                    put("scale", item.scale)
+                    put("rotation", item.rotation)
+                }
+                itemsArray.put(itemObj)
+            }
+
+            put("items", itemsArray)
+        }
+
+        jsonArray.put(obj)
+    }
+
+    context.openFileOutput(OUTFIT_FILE, android.content.Context.MODE_PRIVATE)
+        .use {
+            it.write(jsonArray.toString().toByteArray())
+        }
 }
