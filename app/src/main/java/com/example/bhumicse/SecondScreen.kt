@@ -15,7 +15,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.filled.Checkroom
 import com.example.app.ui.screens.WardrobeScreen
+import com.example.bhumicse.data.OutfitWithItems
 
 @Composable
 fun SecondScreen() {
@@ -25,7 +27,7 @@ fun SecondScreen() {
 
     // Outfit ↔ Canvas navigation state
     var currentScreen by remember { mutableStateOf("outfit") }
-    var selectedOutfit by remember { mutableStateOf<Outfit?>(null) }
+    var selectedOutfit by remember { mutableStateOf<OutfitWithItems?>(null) }
 
     Box(
         modifier = Modifier
@@ -79,7 +81,7 @@ fun SecondScreen() {
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.wardrobe2),
+                                    imageVector = Icons.Default.Checkroom,
                                     contentDescription = "Wardrobe",
                                     tint = if (selectedItem == 1) Color.White else Color.Gray
                                 )
@@ -127,8 +129,8 @@ fun SecondScreen() {
                                         selectedOutfit = null
                                         currentScreen = "canvas"
                                     },
-                                    onEditClick = { outfit ->
-                                        selectedOutfit = outfit
+                                    onEditClick = { outfitWithItems ->
+                                        selectedOutfit = outfitWithItems
                                         currentScreen = "canvas"
                                     }
                                 )
@@ -136,8 +138,11 @@ fun SecondScreen() {
 
                             "canvas" -> {
                                 CanvasScreen(
-                                    outfit = selectedOutfit,
+                                    outfitWithItems = selectedOutfit,
                                     onSave = {
+                                        currentScreen = "outfit"
+                                    },
+                                    onBack = {
                                         currentScreen = "outfit"
                                     }
                                 )
