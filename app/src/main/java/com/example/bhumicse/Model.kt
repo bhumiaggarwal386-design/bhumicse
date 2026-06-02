@@ -1,7 +1,5 @@
 package com.example.bhumicse
 
-import androidx.compose.ui.graphics.graphicsLayer
-
 // 📦 Item Categories
 enum class Category {
     TOPWEAR,
@@ -9,15 +7,19 @@ enum class Category {
     ACCESSORY
 }
 
-// 👕 Base Item (from your drawable resources)
+// 👕 Base Item
+// imageUri added for Room-based items
 data class ClothingData(
     val id: Int,
     val name: String,
     val category: Category,
-    val imageRes: Int
+    val imageRes: Int,
+    val imageUri: String = ""
 )
 
 // 🧱 Item placed on canvas (with transformations)
+// uid used as key instead of id to support
+// duplicate items on canvas
 data class CanvasItem(
     val item: ClothingData,
     var offsetX: Float = 0f,
@@ -35,44 +37,11 @@ data class SavedCanvasItem(
     val rotation: Float
 )
 
-// 👗 Final Outfit
+// 👗 Outfit — kept for reference only
+// actual data lives in Room OutfitEntity
 data class Outfit(
     val id: Int,
     var name: String,
     var items: MutableList<SavedCanvasItem> = mutableListOf(),
     var rating: Int = 0
 )
-
-// 🧪 Sample Data (your items)
-object SampleData {
-
-    val items = listOf(
-        ClothingData(
-            id = 1,
-            name = "Top 1",
-            category = Category.TOPWEAR,
-            imageRes = R.drawable.top1
-        ),
-        ClothingData(
-            id = 2,
-            name = "Bottom 1",
-            category = Category.BOTTOMWEAR,
-            imageRes = R.drawable.bottom1
-        ),
-        ClothingData(
-            id = 3,
-            name = "Accessory 1",
-            category = Category.ACCESSORY,
-            imageRes = R.drawable.accessory1
-        ),
-        ClothingData(
-            id = 4,
-            name = "Accessory 2",
-            category = Category.ACCESSORY,
-            imageRes = R.drawable.accessory2
-        )
-    )
-
-    // 🗂 Temporary Outfit Storage (in-memory)
-    val outfits = mutableListOf<Outfit>()
-}
